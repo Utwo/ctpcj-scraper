@@ -1,34 +1,40 @@
 const cheerio = require('cheerio');
 const request = require('async-request');
 const csv = require('csvtojson');
-const fs = require('fs');
+const jsonfile = require('jsonfile');
 
 const liniiUrbaneUrl = 'http://ctpcj.ro/index.php/ro/orare-linii/linii-urbane';
 const liniiMetropolitaneUrl = 'http://ctpcj.ro/index.php/ro/orare-linii/linii-metropolitane';
 const liniiSuperMarketUrl = 'http://ctpcj.ro/index.php/ro/orare-linii/linii-supermarket';
 const csvBaseUrl = 'http://ctpcj.ro/orare/csv/orar_';
-const jsonFileBasic = 'static/busses_basic.json';
-const jsonFileDetail = 'static/busses_detail.json';
+const jsonFileBasic = 'static/buses_basic.json';
+const jsonFileDetail = 'static/buses_detail.json';
+const filterList = ['route_long_name', 'service_name'];
 
-let defaultOptions = {
-    writeToFile: false
-}
-
-async function scrap(data) {
+async function scrap(data, additionalData) {
     try {
         $ = cheerio.load(data);
-        let lines = [];
-        $('.tz_item .tz-inner .tz-des').each(function(index, element) {
-            const lineItem = {
-                name: $(this).find('h6 a').text().trim().substring(6).replace(" ", ""),
-                url: $(this).find('h6 a').attr('href').trim(),
-                route: $(this).find('.ruta').text().trim(),
-            };
-            lines.push(lineItem);
-        }) ;
+        const lines = [];
+        $('#portfolio').find('.tz_item').each(function () {
+            const availableTypes = ['tramvaie', 'autobuze', 'microbuze', 'troleibuze'];
+            let type;
+            availableTypes.forEach(item => {
+                if ($(this).hasClass(item)) {
+                    type = item;
+                }
+            });
 
-        return lines;
-    } catch(e) {
+            const lineItem = {
+                name: $(this).find('.tz-inner .tz-des h6 a').text().trim().substring(6).replace(" ", ""),
+                // url: $(this).find('h6 a').attr('href').trim(),
+                type: type,
+                route: $(this).find('.tz-inner .tz-des .ruta').text().trim(),
+            };
+            lines.push(Object.assign(lineItem, additionalData));
+        });
+
+        return lines.reverse();
+    } catch (e) {
         throw e;
     }
 }
@@ -40,19 +46,19 @@ async function loadPage(url) {
             Referer: 'http://ctpcj.ro/index.php/ro/orare-linii/linii-urbane/linia1'
         },
     }).then(resp => {
-        if(resp.statusCode != 200) {
+        if (resp.statusCode !== 200) {
             throw `Could not load ${url}`;
-        }        
+        }
         return resp;
     });
 }
- 
+
 async function csvToJson(csvData) {
     const jsonObject = {};
-    const linies = [];
+    const lines = [];
     let i = 0;
 
-    if(!csvData) {
+    if (!csvData) {
         return;
     }
 
@@ -66,63 +72,70 @@ async function csvToJson(csvData) {
                 if (i < 5) {
                     jsonObject[csvRow[0]] = csvRow[1];
                 } else {
-                    linies.push(csvRow);
+                    lines.push(csvRow);
                 }
                 i++;
             })
-            .on('done', (error) => {
-                jsonObject.linies = linies;
+            .on('done', () => {
+                jsonObject.lines = lines;
                 resolve(jsonObject);
             })
     });
 }
 
-async function writeToJsonFile(file, data){
-    if(defaultOptions.writeToFile){
-        return fs.writeFile(file, JSON.stringify(data), (err) => {
-            if(err) {
-                console.error(err);
-            }
-        });
-    }
+async function filterLines(lines, filterList) {
+    filterList.map(filter => {
+        delete lines[filter]
+    });
+    return lines;
 }
 
-async function main(options) {
-    defaultOptions = Object.assign({}, defaultOptions, options);
+async function scrapOneLine(lineName) {
+    return Promise.all([
+        loadPage(csvBaseUrl + lineName + '_lv.csv').then(html => csvToJson(html.body).then(json => filterLines(json, filterList))).catch(e => console.error(e)),
+        loadPage(csvBaseUrl + lineName + '_s.csv').then(html => csvToJson(html.body).then(json => filterLines(json, filterList))).catch(e => console.error(e)),
+        loadPage(csvBaseUrl + lineName + '_d.csv').then(html => csvToJson(html.body).then(json => filterLines(json, filterList))).catch(e => console.error(e))
+    ]);
+}
+
+async function scrapAll() {
     let scraperResponse;
 
     const [urbane, metropolitane, market]  = await Promise.all([
-            loadPage(liniiUrbaneUrl).then(html => scrap(html.body)).catch(e => console.error(e)),
-            loadPage(liniiMetropolitaneUrl).then(html => scrap(html.body)).catch(e => console.error(e)),
-            loadPage(liniiSuperMarketUrl).then(html => scrap(html.body)).catch(e => console.error(e))
-        ])
+        loadPage(liniiUrbaneUrl).then(html => scrap(html.body)).catch(e => console.error(e)),
+        loadPage(liniiMetropolitaneUrl).then(html => scrap(html.body)).catch(e => console.error(e)),
+        loadPage(liniiSuperMarketUrl).then(html => scrap(html.body)).catch(e => console.error(e))
+    ]);
 
-    market.map(linie => {
-        linie.name = linie.name.toLowerCase();
-    })
+    market.map(line => {
+        line.name = line.name.toLowerCase();
+    });
 
-    scraperResponse = { urbane, metropolitane, market }
+    scraperResponse = {urbane, metropolitane, market};
 
-    writeToJsonFile(jsonFileBasic, scraperResponse);
+    jsonfile.writeFile(jsonFileBasic, scraperResponse);
 
-    for([key1, linies] of Object.entries(scraperResponse)) {
-        for([key2, linie] of linies.entries()) {
+    for (const [key1, lines] of Object.entries(scraperResponse)) {
+        for (const [key2, line] of lines.entries()) {
 
-            const [lv, s, d] = await Promise.all([
-                loadPage(csvBaseUrl + linie.name + '_lv.csv').then(html => csvToJson(html.body)).catch(e => console.log(e)),
-                loadPage(csvBaseUrl + linie.name + '_s.csv').then(html => csvToJson(html.body)).catch(e => console.log(e)),
-                loadPage(csvBaseUrl + linie.name + '_d.csv').then(html => csvToJson(html.body)).catch(e => console.log(e))
-            ]);
+            const [lv, s, d] = await scrapOneLine(line.name);
 
-            scraperResponse[key1][key2].statii = {lv, s, d};
-            writeToJsonFile('static/' + linie.name + '.json', scraperResponse[key1][key2]);
+            scraperResponse[key1][key2].station = {lv, s, d};
+            jsonfile.writeFile('static/' + line.name + '.json', scraperResponse[key1][key2], (err) => {
+                if (err) {
+                    console.error(err);
+                }
+            })
         }
     }
 
-    // const value = await Promise.all([scraperResponse]);
-    scraperResponse.update = Date.now();
-    writeToJsonFile(jsonFileDetail, scraperResponse);
+    jsonfile.writeFile(jsonFileDetail, scraperResponse, (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+
     return scraperResponse;
 }
 
-exports.scrap = main;
+scrapAll();

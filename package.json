@@ -1,19 +1,19 @@
 {
-  "name": "scrapper",
+  "name": "scraper",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node server.js",
+    "generate": "node scraper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "async-request": "^1.2.0",
     "cheerio": "^1.0.0-rc.2",
-    "csvtojson": "^1.1.7",
-    "express": "^4.15.4",
-    "node-schedule": "^1.2.5"
+    "csvtojson": "^1.1.9",
+    "jsonfile": "^4.0.0"
   }
 }
