@@ -91,6 +91,9 @@ async function filterLines(lines, filterList) {
 }
 
 async function scrapOneLine(lineName) {
+    if (lineName == 'vivo!') {
+        lineName = '87B'
+    }
     return Promise.all([
         loadPage(csvBaseUrl + lineName + '_lv.csv').then(html => csvToJson(html.body).then(json => filterLines(json, filterList))).catch(e => console.error(e)),
         loadPage(csvBaseUrl + lineName + '_s.csv').then(html => csvToJson(html.body).then(json => filterLines(json, filterList))).catch(e => console.error(e)),
