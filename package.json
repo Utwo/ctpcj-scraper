@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "generate": "node scraper.js",
+    "deploy": "now alias --token=$NOW_TOKEN $(now ./static --name=ctpcj-scraper --static --no-clipboard --token=$NOW_TOKEN --public) ctpcj-scraper",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,5 +16,8 @@
     "cheerio": "^1.0.0-rc.2",
     "csvtojson": "^1.1.9",
     "jsonfile": "^4.0.0"
+  },
+  "devDependencies": {
+    "now": "^9.3.2"
   }
 }
