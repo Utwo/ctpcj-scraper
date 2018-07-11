@@ -5,8 +5,12 @@
   "main": "main.js",
   "scripts": {
     "generate": "node scraper.js",
-    "deploy": "now alias --token=$NOW_TOKEN $(now ./static --name=ctpcj-scraper --static --no-clipboard --token=$NOW_TOKEN --public) ctpcj-scraper",
+    "deploy": "now ./static --static --no-clipboard --token $NOW_TOKEN --public && now alias --token $NOW_TOKEN",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "now": {
+    "name": "ctpcj-scraper",
+    "alias": "ctpcj-scraper"
   },
   "keywords": [],
   "author": "",
