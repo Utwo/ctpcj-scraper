@@ -18,6 +18,6 @@
     "jsonfile": "^4.0.0"
   },
   "devDependencies": {
-    "now": "^9.3.2"
+    "now": "^11.2.8"
   }
 }
