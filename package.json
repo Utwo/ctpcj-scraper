@@ -5,12 +5,14 @@
   "main": "main.js",
   "scripts": {
     "generate": "node scraper.js",
-    "deploy": "now ./static --static --no-clipboard --token $NOW_TOKEN --public && now alias --token $NOW_TOKEN",
+    "deploy": "now ./static --static --name ctpcj-scraper --token KN9FzPle3MjBMzJTgIYkCCq2 --public && now alias --token KN9FzPle3MjBMzJTgIYkCCq2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "now": {
     "name": "ctpcj-scraper",
-    "alias": "ctpcj-scraper"
+    "alias": "ctpcj-scraper",
+    "type": "static",
+    "public": true
   },
   "keywords": [],
   "author": "",
