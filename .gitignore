@@ -13,4 +13,3 @@ yarn-error.log*
 *.sln
 
 /static/*
-!static/now.json
