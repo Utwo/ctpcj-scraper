@@ -1,0 +1,12 @@
+name: 7-day-cron
+on:
+  schedule:
+    - cron: "0 0 * * 2"
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel deployment
+        run: |
+          curl --request POST \
+          --url 'https://api.vercel.com/v1/integrations/deploy/${{DEPLOY_HOOK_SECRET}}'
