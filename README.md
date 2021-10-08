@@ -1,6 +1,7 @@
-# ctpcj-scrapper 
-[![Build Status](https://travis-ci.org/Utwo/ctpcj-scraper.svg?branch=master)](https://travis-ci.org/Utwo/ctpcj-scraper)
+# ctpcj-scrapper
 
-Live version: http://ctpcj-scraper.now.sh/
+[![7-day-cron](https://github.com/Utwo/ctpcj-scraper/actions/workflows/cron.yaml/badge.svg)](https://github.com/Utwo/ctpcj-scraper/actions/workflows/cron.yaml)
 
-Node scrapper for http://ctpcj.ro/
+Live version: https://ctpcj-scraper-utwo.vercel.app
+
+Node scrapper for http://ctpcj.ro
