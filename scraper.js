@@ -40,7 +40,6 @@ async function scrap(data, additionalData) {
             .trim()
             .substring(6)
             .replace(" ", ""),
-          // url: $(this).find('h6 a').attr('href').trim(),
           type: type,
           route: $(this).find(".tz-inner .tz-des .ruta").text().trim(),
         };
@@ -81,9 +80,10 @@ async function csvToJson(csvData) {
       noheader: true,
       flatKeys: true,
       headers: [1, 2],
+      output: "csv",
     })
       .fromString(csvData)
-      .on("csv", (csvRow) => {
+      .subscribe((csvRow) => {
         if (i < 5) {
           jsonObject[csvRow[0]] = csvRow[1];
         } else {
@@ -111,9 +111,12 @@ async function scrapOneLine(lineName) {
   }
   return Promise.all([
     loadPage(csvBaseUrl + lineName + "_lv.csv")
-      .then((html) =>
-        csvToJson(html.body).then((json) => filterLines(json, filterList))
-      )
+      .then((html) => {
+        return csvToJson(html.body).then((json) => {
+          console.log(json);
+          return filterLines(json, filterList);
+        });
+      })
       .catch((e) => console.error(e)),
     loadPage(csvBaseUrl + lineName + "_s.csv")
       .then((html) =>
