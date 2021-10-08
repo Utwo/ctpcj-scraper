@@ -4,8 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "generate": "rm -rf static && mkdir static && node scraper.js",
-    "deploy": "now --target=production --token=${NOW_TOKEN}"
+    "generate": "rm -rf public && mkdir public && node scraper.js"
   },
   "keywords": [],
   "author": "",
@@ -13,10 +12,10 @@
   "dependencies": {
     "async-request": "^1.2.0",
     "cheerio": "^1.0.0-rc.2",
-    "csvtojson": "^1.1.9",
-    "jsonfile": "^4.0.0"
+    "csvtojson": "^2.0.10",
+    "jsonfile": "^6.1.0"
   },
   "devDependencies": {
-    "now": "^15.0.7"
+    "vercel": "^23.1.2"
   }
 }
