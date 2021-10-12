@@ -1,7 +1,7 @@
 name: 7-day-cron
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "0 0 * * 2"
 jobs:
   cron:
     runs-on: ubuntu-latest
