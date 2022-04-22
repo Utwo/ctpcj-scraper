@@ -3,12 +3,12 @@ const request = require("async-request");
 const csv = require("csvtojson");
 const jsonfile = require("jsonfile");
 
-const liniiUrbaneUrl = "http://ctpcj.ro/index.php/ro/orare-linii/linii-urbane";
+const liniiUrbaneUrl = "https://ctpcj.ro/index.php/ro/orare-linii/linii-urbane";
 const liniiMetropolitaneUrl =
-  "http://ctpcj.ro/index.php/ro/orare-linii/linii-metropolitane";
+  "https://ctpcj.ro/index.php/ro/orare-linii/linii-metropolitane";
 const liniiSuperMarketUrl =
-  "http://ctpcj.ro/index.php/ro/orare-linii/linii-supermarket";
-const csvBaseUrl = "http://ctpcj.ro/orare/csv/orar_";
+  "https://ctpcj.ro/index.php/ro/orare-linii/linii-supermarket";
+const csvBaseUrl = "https://ctpcj.ro/orare/csv/orar_";
 const jsonFileBasic = "public/buses_basic.json";
 const jsonFileDetail = "public/buses_detail.json";
 const filterList = ["route_long_name", "service_name"];
@@ -56,7 +56,7 @@ async function loadPage(url) {
   return request(url, {
     headers: {
       host: "ctpcj.ro",
-      Referer: "http://ctpcj.ro/index.php/ro/orare-linii/linii-urbane/linia1",
+      Referer: "https://ctpcj.ro/index.php/ro/orare-linii/linii-urbane/linia1",
     },
   }).then((resp) => {
     if (resp.statusCode !== 200) {
@@ -113,7 +113,6 @@ async function scrapOneLine(lineName) {
     loadPage(csvBaseUrl + lineName + "_lv.csv")
       .then((html) => {
         return csvToJson(html.body).then((json) => {
-          console.log(json);
           return filterLines(json, filterList);
         });
       })
