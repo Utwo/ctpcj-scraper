@@ -54,22 +54,17 @@ async function scrap(data, additionalData) {
 }
 
 async function loadPage(url) {
-  console.log(url);
   return request(url, {
     headers: {
       host: "ctpcj.ro",
       Referer: "https://ctpcj.ro/index.php/ro/orare-linii/linii-urbane/linia1",
     },
-  })
-    .then((resp) => {
-      if (resp.statusCode !== 200) {
-        throw `Could not load ${url}`;
-      }
-      return resp;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  }).then((resp) => {
+    if (resp.statusCode !== 200) {
+      throw `Could not load ${url}`;
+    }
+    return resp;
+  });
 }
 
 async function csvToJson(csvData) {
