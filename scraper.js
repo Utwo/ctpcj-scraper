@@ -38,7 +38,8 @@ async function scrap(data, additionalData) {
             .find(".tz-inner .tz-des h6 a")
             .text()
             .trim()
-            .substring(6)
+            .replace("Linia", "")
+            .replace("🚲", "")
             .replace(" ", ""),
           type: type,
           route: $(this).find(".tz-inner .tz-des .ruta").text().trim(),
@@ -53,17 +54,22 @@ async function scrap(data, additionalData) {
 }
 
 async function loadPage(url) {
+  console.log(url);
   return request(url, {
     headers: {
       host: "ctpcj.ro",
       Referer: "https://ctpcj.ro/index.php/ro/orare-linii/linii-urbane/linia1",
     },
-  }).then((resp) => {
-    if (resp.statusCode !== 200) {
-      throw `Could not load ${url}`;
-    }
-    return resp;
-  });
+  })
+    .then((resp) => {
+      if (resp.statusCode !== 200) {
+        throw `Could not load ${url}`;
+      }
+      return resp;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 async function csvToJson(csvData) {
