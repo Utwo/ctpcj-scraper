@@ -40,7 +40,7 @@ async function scrap(data, additionalData) {
             .trim()
             .replace("Linia", "")
             .replace("🚲", "")
-            .replace(" ", ""),
+            .replace(/\s/g, ""),
           type: type,
           route: $(this).find(".tz-inner .tz-des .ruta").text().trim(),
         };
