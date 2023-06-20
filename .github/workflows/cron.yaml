@@ -6,7 +6,7 @@ jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - name: Call Vercel deployment
+      - name: Call Vercel Deployment
         run: |
           curl --request POST \
           --url 'https://api.vercel.com/v1/integrations/deploy/${{ secrets.DEPLOY_HOOK_SECRET }}'
