@@ -4,4 +4,4 @@
 
 Live version: https://ctpcj-scraper-utwo.vercel.app
 
-Node scrapper for http://ctpcj.ro
+Node scrapper for https://ctpcj.ro
